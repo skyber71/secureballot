@@ -1,21 +1,20 @@
-const User = require("../models/userModel.js");
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const User = require("../models/userModel.js");
 const returnCodes = require("../assests/returnCodes.js");
-
-
-const home = async (req, res, next) =>{
+const jwtSecret = process.env.JWT_SECRET;
+const home = async (req, res, next) => {
     res.json({
-        code: returnCodes.SUCCESS,
+        code: returnCodes.SUCCESS, 
         message: "Home page"
     });
 }
 
-
 const register = async (req, res, next) => {
     try{
-        const email = "admin@gmail.com";
-        const password = "123";
-        const username = "admertykhin";
+        const email = req.body.email;
+        const password = req.body.password;
+        const username = req.body.username;
 
         const hashedPassword  = await bcrypt.hash(password, 10);
         const existingEmail = await User.findOne({email});
@@ -53,18 +52,25 @@ const register = async (req, res, next) => {
     } 
 }
 
-
 const login = async (req, res, next) => {
-    try{
-        const email = "admin@gmail.com";
-        const password = "123";
-        const username = "admertykhin";
+    try{ 
+        const email = req.body.email;
+        const password = req.body.password;
+        const username = req.body.username;
 
         const userData = await User.findOne({username: username});
 
         if(userData){
             const passwordMatch = await bcrypt.compare(password, userData.password);
             if(passwordMatch){
+                const token = jwt.sign({ 
+                    username: userData.username,
+                    email: userData.email 
+                }, 
+                jwtSecret, { 
+                    expiresIn: '24h' 
+                });
+                res.cookie('jwtCookies', token, { maxAge: 86400, httpOnly: true });
                 res.json({
                     code: returnCodes.SUCCESS,
                     message: "User logged in successfully"
@@ -92,19 +98,23 @@ const login = async (req, res, next) => {
 
 const dashboard = async (req, res, next) => {
     try{
-
-        
-
-
-
-        
-
+        const userData = await User.findOne({username: req.username});
+        const user = {
+            username: userData.username,
+            email: userData.email
+        }
+        res.json({
+            code: returnCodes.SUCCESS,
+            message: `Current user is: ${req.username}`,
+            data: user
+        });
     }
     catch(err){
         console.log(err);
     }
-
 }
+
+
 
 
 module.exports = {
