@@ -13,15 +13,12 @@ app.use(cookieParser());
 const userRoute = require("./routes/userRoute.js");
 app.use("/",userRoute);
 
-// Database Connection
-mongoose.connect(mongodbUrl)
-    .then(()=>{
-        console.log('Connected to mongodb');
-    })
-    .catch((err)=>{
-        console.log(err);
-    });
+mongoose.connect(mongodbUrl).then(() => {
+    console.log('Connected to mongodb');
+}).catch((err) => {
+    console.log(err);
+});
 
-app.listen(port,()=>{
+app.listen(port,() => {
     console.log(`server is running on port ${port}`);
 });

@@ -1,16 +1,17 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require("../models/userModel.js");
-const returnCodes = require("../assests/returnCodes.js");
+const returnCodes = require("../assets/returnCodes.js");
 const jwtSecret = process.env.JWT_SECRET;
-const home = async (req, res, next) => {
+ 
+const home = async (req, res) => {
     res.json({
         code: returnCodes.SUCCESS, 
         message: "Home page"
     });
 }
 
-const register = async (req, res, next) => {
+const register = async (req, res) => {
     try{
         const email = req.body.email;
         const password = req.body.password;
@@ -52,13 +53,15 @@ const register = async (req, res, next) => {
     } 
 }
 
-const login = async (req, res, next) => {
+const login = async (req, res) => {
     try{ 
         const email = req.body.email;
         const password = req.body.password;
         const username = req.body.username;
 
-        const userData = await User.findOne({username: username});
+        const userData = await User.findOne({
+            username: username
+        });
 
         if(userData){
             const passwordMatch = await bcrypt.compare(password, userData.password);
@@ -70,7 +73,10 @@ const login = async (req, res, next) => {
                 jwtSecret, { 
                     expiresIn: '24h' 
                 });
-                res.cookie('jwtCookies', token, { maxAge: 86400, httpOnly: true });
+                res.cookie('jwtCookies', token, { 
+                    maxAge: 86400, 
+                    httpOnly: true 
+                });
                 res.json({
                     code: returnCodes.SUCCESS,
                     message: "User logged in successfully"
@@ -96,9 +102,11 @@ const login = async (req, res, next) => {
     }
 }
 
-const dashboard = async (req, res, next) => {
+const dashboard = async (req, res) => {
     try{
-        const userData = await User.findOne({username: req.username});
+        const userData = await User.findOne({
+            username: req.username
+        });
         const user = {
             username: userData.username,
             email: userData.email
@@ -114,12 +122,9 @@ const dashboard = async (req, res, next) => {
     }
 }
 
-
-
-
-module.exports = {
-    register,
-    login,
-    home,
-    dashboard
+module.exports = { 
+    register, 
+    login, 
+    home, 
+    dashboard 
 }

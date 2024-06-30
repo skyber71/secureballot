@@ -1,7 +1,7 @@
 const express = require('express');
 const user_route = express();
 const userController = require("../controller/userController.js");
-const checkForJwtToken = require("../middlewares/sessionChecks.js");
+const { checkForJwtToken } = require("../middlewares/sessionChecks.js");
 
 user_route.get("/", userController.home);
 user_route.get("/login",userController.login);

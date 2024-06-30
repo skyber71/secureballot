@@ -1,4 +1,4 @@
-const returnCodes = require("../assests/returnCodes.js");
+const returnCodes = require("../assets/returnCodes.js");
 const jwtSecret = process.env.JWT_SECRET;
 const jwt = require('jsonwebtoken');
 
@@ -21,4 +21,6 @@ const checkForJwtToken = async (req, res, next) => {
         console.log(err);
     }
 }
-module.exports = checkForJwtToken;
+module.exports = { 
+    checkForJwtToken 
+};
